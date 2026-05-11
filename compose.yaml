@@ -29,3 +29,13 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+
+  init-kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - kafka
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: >
+      cub kafka-ready -b kafka:9092 1 20 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic user_notification --partitions 1 --replication-factor 1
