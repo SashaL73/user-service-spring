@@ -40,10 +40,10 @@ public class UserController {
         EntityModel<UserDto> dtoWithResource = EntityModel.of(userDto);
 
         dtoWithResource.add(linkTo(methodOn(UserController.class).getUserById(id)).withSelfRel());
-        dtoWithResource.add(linkTo(methodOn(UserController.class).createUser((NewUserRequest) null)).withRel("Создание пользователя"));
-        dtoWithResource.add(linkTo(methodOn(UserController.class).updateUser(id, (UpdateUserRequest) null)).withRel("Обновление пользователя"));
-        dtoWithResource.add(linkTo(methodOn(UserController.class).deleteUser(id)).withRel("Удалить"));
-        dtoWithResource.add(linkTo(methodOn(UserController.class).getAllUsers()).withRel("Получить всех пользователей"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).createUser((NewUserRequest) null)).withRel("Создание пользователя").withType("POST"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).updateUser(id, (UpdateUserRequest) null)).withRel("Обновление пользователя").withType("PATCH"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).deleteUser(id)).withRel("Удалить").withType("DELETE"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).getAllUsers()).withRel("Получить всех пользователей").withType("GET"));
 
         return ResponseEntity.ok(dtoWithResource);
     }
@@ -60,10 +60,10 @@ public class UserController {
         EntityModel<UserDto> dtoWithResource = EntityModel.of(userDto);
 
         dtoWithResource.add(linkTo(methodOn(UserController.class).createUser((NewUserRequest) null)).withSelfRel());
-        dtoWithResource.add(linkTo(methodOn(UserController.class).getUserById(userDto.getId())).withRel("Получить пользователя по id"));
-        dtoWithResource.add(linkTo(methodOn(UserController.class).updateUser(userDto.getId(), (UpdateUserRequest) null)).withRel("Обновление пользователя"));
-        dtoWithResource.add(linkTo(methodOn(UserController.class).deleteUser(userDto.getId())).withRel("Удалить"));
-        dtoWithResource.add(linkTo(methodOn(UserController.class).getAllUsers()).withRel("Получить всех пользователей"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).getUserById(userDto.getId())).withRel("Получить пользователя по id").withType("GET"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).updateUser(userDto.getId(), (UpdateUserRequest) null)).withRel("Обновление пользователя").withType("PATCH"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).deleteUser(userDto.getId())).withRel("Удалить").withType("DELETE"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).getAllUsers()).withRel("Получить всех пользователей").withType("GET"));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(dtoWithResource);
     }
@@ -77,14 +77,14 @@ public class UserController {
 
         List<EntityModel<UserDto>> listDtoWithResource = userDtoList.stream()
                 .map(userDto ->  EntityModel.of(userDto)
-                        .add(linkTo(methodOn(UserController.class).getUserById(userDto.getId())).withRel("Получить пользователя по id"))
-                        .add(linkTo(methodOn(UserController.class).updateUser(userDto.getId(), (UpdateUserRequest) null)).withRel("Обновление пользователя"))
-                        .add(linkTo(methodOn(UserController.class).deleteUser(userDto.getId())).withRel("Удалить")))
+                        .add(linkTo(methodOn(UserController.class).getUserById(userDto.getId())).withRel("Получить пользователя по id").withType("GET"))
+                        .add(linkTo(methodOn(UserController.class).updateUser(userDto.getId(), (UpdateUserRequest) null)).withRel("Обновление пользователя").withType("PATCH"))
+                        .add(linkTo(methodOn(UserController.class).deleteUser(userDto.getId())).withRel("Удалить").withType("DELETE")))
                 .toList();
 
         CollectionModel<EntityModel<UserDto>> userDtoCollection = CollectionModel.of(listDtoWithResource);
 
-        userDtoCollection.add(linkTo(methodOn(UserController.class).createUser((NewUserRequest) null)).withRel("Создать пользователя"));
+        userDtoCollection.add(linkTo(methodOn(UserController.class).createUser((NewUserRequest) null)).withRel("Создать пользователя").withType("POST"));
 
         return userDtoCollection;
     }
@@ -100,9 +100,9 @@ public class UserController {
         EntityModel<UserDto> dtoWithResource = EntityModel.of(userDto);
 
         dtoWithResource.add(linkTo(methodOn(UserController.class).updateUser(userDto.getId(), (UpdateUserRequest) null)).withSelfRel());
-        dtoWithResource.add(linkTo(methodOn(UserController.class).getUserById(userDto.getId())).withRel("Получить пользователя по id"));
-        dtoWithResource.add(linkTo(methodOn(UserController.class).getAllUsers()).withRel("Получить всех пользователей"));
-        dtoWithResource.add(linkTo(methodOn(UserController.class).deleteUser(userDto.getId())).withRel("Удалить"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).getUserById(userDto.getId())).withRel("Получить пользователя по id").withType("GET"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).getAllUsers()).withRel("Получить всех пользователей").withType("GET"));
+        dtoWithResource.add(linkTo(methodOn(UserController.class).deleteUser(userDto.getId())).withRel("Удалить").withType("DELETE"));
 
         return ResponseEntity.ok(dtoWithResource);
     }
