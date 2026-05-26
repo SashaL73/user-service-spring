@@ -1,11 +1,7 @@
 package dto;
 
 import lombok.Builder;
-import lombok.Data;
 
-@Data
 @Builder
-public class EmailRequest {
-    private String email;
-    private String message;
+public record EmailRequest(String email, String message) {
 }
