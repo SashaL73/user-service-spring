@@ -5,16 +5,16 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
+import lombok.Data;
 
+@Data
 @Builder
-public record NewUserRequest (
+public class NewUserRequest {
     @NotEmpty(message = "Имя должно быть указано")
-    String name,
+    private String name;
     @Email(message = "Некорректно введенный email")
-    String email,
+    private String email;
     @Positive(message = "Возраст должен быть положительным")
     @NotNull(message = "Возраст должен быть указан")
-    Long age
-) {
-
+    private Long age;
 }
