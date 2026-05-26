@@ -120,7 +120,7 @@ public class UserControllerTest {
     @Test
     void createUserShouldReturnConflict() throws Exception {
         Mockito.when(userService.createUser(Mockito.any(NewUserRequest.class)))
-                .thenThrow(new ConflictException("Пользователь с email " + request.getEmail() + " уже существует"));
+                .thenThrow(new ConflictException("Пользователь с email " + request.email() + " уже существует"));
 
         mockMvc.perform(post(PATH)
                         .contentType(MediaType.APPLICATION_JSON)
