@@ -1,4 +1,20 @@
 services:
+  user-service:
+    build: ./user-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/userservice
+      - SPRING_DATASOURCE_USERNAME=dbuser
+      - SPRING_DATASOURCE_PASSWORD=12345
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+
   db:
     image: postgres:16.1
     container_name: postgresUserServiceSpringBoot
@@ -11,7 +27,40 @@ services:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
     healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U dbuser -d userservice"]
       interval: 5s
+      timeout: 5s
       retries: 10
+
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      KAFKA_LISTENERS: INDOCKER://0.0.0.0:29092,OUTDOCKER://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INDOCKER://kafka:29092,OUTDOCKER://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INDOCKER:PLAINTEXT,OUTDOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INDOCKER
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  init-kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      cub kafka-ready -b kafka:29092 1 20 &&
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic user_notification --partitions 1 --replication-factor 1
