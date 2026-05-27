@@ -33,10 +33,16 @@ public class UserServiceImpl implements UserService{
         log.info("Создание пользователя с email={}", request.getEmail());
         try {
             User user = userRepository.save(UserMapper.mapToUser(request));
-            kafkaProducerService.sendMessage("user_notification", NotificationMessage.builder()
-                    .email(request.getEmail())
-                    .operation("CREATE")
-                    .build());
+            try {
+                kafkaProducerService.sendMessage("user_notification", NotificationMessage.builder()
+                        .email(request.getEmail())
+                        .operation("CREATE")
+                        .build());
+            } catch (Exception e) {
+                log.error("Не удалось отправить уведомление, email={}",
+                        request.getEmail(), e);
+            }
+
             return UserMapper.mapToUserDto(user);
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException("Пользователь с email " + request.getEmail() + " уже существует");

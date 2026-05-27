@@ -1,0 +1,49 @@
+server:
+  port: 9090
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/notificationservice
+    username: dbuser
+    password: 12345
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: notification-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: aston.intensiv.notificationservice.dto.NotificationMessageDto
+        spring.json.use.type.headers: false
+
+  mail:
+    host: localhost
+    port: 1025
+    protocol: smtp
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+
+app:
+  kafka:
+    topics:
+      user-notification: user_notification
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
